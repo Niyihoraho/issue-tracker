@@ -13,7 +13,7 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="flex space-x-6 border-b border-gray-300 mb-5 px-5 h-14 items-center font-semibold">
+    <nav className="flex space-x-6 border-b border-gray-300 mb-5 px-5 h-14 items-center">
       <Link href="/">
         <FaBug />
       </Link>
