@@ -12,6 +12,7 @@
     "@prisma/client": "^6.9.0",
     "@radix-ui/themes": "^3.2.1",
     "@tailwindcss/postcss": "^4.1.8",
+    "axios": "^1.9.0",
     "classnames": "^2.5.1",
     "easymde": "^2.20.0",
     "next": "15.3.3",
@@ -19,10 +20,11 @@
     "prisma": "^6.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.57.0",
     "react-icons": "^5.5.0",
     "react-simplemde-editor": "^5.2.0",
     "tailwindcss": "^4.1.8",
-    "zod": "^3.25.56"
+    "zod": "^3.25.62"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
