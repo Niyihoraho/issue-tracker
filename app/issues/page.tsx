@@ -1,18 +1,39 @@
 import React from "react";
-import { Button, Table } from "@radix-ui/themes";
+import { Button, Table, Badge } from "@radix-ui/themes";
 import Link from "next/link";
 import prisma from "@/prisma/client";
+import delay from "delay";
+import IssueAction from "./IssueAction";
 
-const issuesPage = async () => {
-  const issues = await prisma.issue.findMany();
+// Define types if not importing from @prisma/client
+type Status = "OPEN" | "IN_PROGRESS" | "CLOSED";
+
+interface Issue {
+  id: number;
+  title: string;
+  status: Status;
+  createdAt: Date;
+}
+
+// Define the type for the status properties
+interface StatusDetail {
+  label: string;
+  color: "red" | "violet" | "green"; // Be specific with the color types
+}
+
+const statusMap: Record<Status, StatusDetail> = {
+  OPEN: { label: "Open", color: "red" },
+  IN_PROGRESS: { label: "In Progress", color: "violet" },
+  CLOSED: { label: "Closed", color: "green" },
+};
+
+const IssuesPage = async () => {
+  const issues: Issue[] = await prisma.issue.findMany();
+  await delay(2000);
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
-      <div className="mb-4">
-        <Button size="2">
-          <Link href="/issues/new">New Issue</Link>
-        </Button>
-      </div>
+      <IssueAction />
 
       {/* Desktop Table */}
       <div className="hidden md:block">
@@ -41,17 +62,12 @@ const issuesPage = async () => {
                   </div>
                 </Table.Cell>
                 <Table.Cell>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                      issue.status === "OPEN"
-                        ? "bg-green-100 text-green-800"
-                        : issue.status === "IN_PROGRESS"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
-                    }`}
+                  <Badge
+                    color={statusMap[issue.status].color}
+                    variant="outline"
                   >
-                    {issue.status}
-                  </span>
+                    {statusMap[issue.status].label}
+                  </Badge>
                 </Table.Cell>
                 <Table.Cell className="text-sm text-gray-600">
                   {issue.createdAt.toLocaleDateString()}
@@ -73,17 +89,9 @@ const issuesPage = async () => {
               <h3 className="font-medium text-sm text-gray-900 flex-1 pr-2">
                 {issue.title}
               </h3>
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                  issue.status === "OPEN"
-                    ? "bg-green-100 text-green-800"
-                    : issue.status === "IN_PROGRESS"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {issue.status}
-              </span>
+              <Badge color={statusMap[issue.status].color} variant="outline">
+                {statusMap[issue.status].label}
+              </Badge>
             </div>
             <div className="text-xs text-gray-500">
               Created: {issue.createdAt.toLocaleDateString()}
@@ -105,4 +113,4 @@ const issuesPage = async () => {
   );
 };
 
-export default issuesPage;
+export default IssuesPage;
