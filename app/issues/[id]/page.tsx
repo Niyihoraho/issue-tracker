@@ -1,28 +1,13 @@
 import prisma from "@/prisma/client";
+import { Badge, Box, Card, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
-import { Pencil2Icon } from "@radix-ui/react-icons";
-import {
-  Heading,
-  Flex,
-  Text,
-  Card,
-  Badge,
-  Grid,
-  Box,
-  Button,
-} from "@radix-ui/themes";
 import ReactMarkdown from "react-markdown";
-import Link from "next/link";
+import EditIssueButton from "./EditIssueButton";
+import IssueDetails from "./IssueDetails";
 
 interface Props {
   params: { id: string };
 }
-
-const statusMap = {
-  OPEN: { label: "Open", color: "green" },
-  IN_PROGRESS: { label: "In Progress", color: "blue" },
-  CLOSED: { label: "Closed", color: "gray" },
-} as const;
 
 const IssueDetailPage = async ({ params }: Props) => {
   const issueId = parseInt(params.id);
@@ -35,27 +20,13 @@ const IssueDetailPage = async ({ params }: Props) => {
 
   if (!issue) return notFound();
 
-  const status = statusMap[issue.status as keyof typeof statusMap];
-
   return (
     <Grid columns={{ initial: "1", md: "2" }} gap="5">
       <Box>
-        <Heading>{issue.title}</Heading>
-        <Flex className="space-x-3" my="2">
-          <Badge color={status?.color || "gray"}>
-            {status?.label || issue.status}
-          </Badge>
-          <Text>{issue.createdAt.toDateString()}</Text>
-        </Flex>
-        <Card className="prose" mt="4">
-          <ReactMarkdown>{issue.description}</ReactMarkdown>
-        </Card>
+        <IssueDetails issue={issue} />
       </Box>
       <Box>
-        <Button>
-          <Pencil2Icon />
-          <Link href={`/issues/${issue.id}/edit`}>Edit Issue</Link>
-        </Button>
+        <EditIssueButton issueId={issue.id} />
       </Box>
     </Grid>
   );
