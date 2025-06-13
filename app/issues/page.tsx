@@ -1,9 +1,9 @@
 import React from "react";
-import { Button, Table, Badge } from "@radix-ui/themes";
-import Link from "next/link";
+import { Table, Badge } from "@radix-ui/themes";
 import prisma from "@/prisma/client";
 import delay from "delay";
 import IssueAction from "./IssueAction";
+import { Link } from "@/app/components";
 
 // Define types if not importing from @prisma/client
 type Status = "OPEN" | "IN_PROGRESS" | "CLOSED";
@@ -40,7 +40,7 @@ const IssuesPage = async () => {
         <Table.Root variant="surface" size="1">
           <Table.Header>
             <Table.Row>
-              <Table.ColumnHeaderCell className="w-80">
+              <Table.ColumnHeaderCell className="w-70">
                 Issue
               </Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="w-24">
@@ -57,15 +57,12 @@ const IssuesPage = async () => {
                 <Table.Cell>
                   <div className="max-w-xs">
                     <div className="font-medium text-sm truncate">
-                      {issue.title}
+                      <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
                     </div>
                   </div>
                 </Table.Cell>
                 <Table.Cell>
-                  <Badge
-                    color={statusMap[issue.status].color}
-                    variant="outline"
-                  >
+                  <Badge color={statusMap[issue.status].color}>
                     {statusMap[issue.status].label}
                   </Badge>
                 </Table.Cell>
@@ -89,7 +86,7 @@ const IssuesPage = async () => {
               <h3 className="font-medium text-sm text-gray-900 flex-1 pr-2">
                 {issue.title}
               </h3>
-              <Badge color={statusMap[issue.status].color} variant="outline">
+              <Badge color={statusMap[issue.status].color}>
                 {statusMap[issue.status].label}
               </Badge>
             </div>
@@ -104,9 +101,6 @@ const IssuesPage = async () => {
       {issues.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-500 mb-4">No issues found</div>
-          <Button>
-            <Link href="/issues/new">Create your first issue</Link>
-          </Button>
         </div>
       )}
     </div>

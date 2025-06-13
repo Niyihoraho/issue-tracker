@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -71,6 +70,12 @@ const NewIssuePage = () => {
   // Render methods
   const renderSuccessAlert = () => {
     if (!showAlert) return null;
+
+    // disable SSL
+
+    const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+      ssr: false,
+    });
 
     return (
       <div className="max-w-xl mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg bg-opacity-80">
