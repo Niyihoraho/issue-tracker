@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField, Button } from "@radix-ui/themes";
-import dynamic from "next/dynamic";
 import axios from "axios";
+import SimpleMDE from "react-simplemde-editor";
 
-// Styles
 import "easymde/dist/easymde.min.css";
 
 // Components
@@ -19,11 +18,6 @@ import Spinner from "@/app/components/Spinner";
 import { createIssueSchema } from "@/app/validationSchema";
 import { Issue } from "@/app/generated/prisma";
 import delay from "delay";
-
-// Dynamic imports
-const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
 
 // Types
 interface IssueForm {
@@ -49,7 +43,6 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
   const onSubmit = async (data: IssueForm) => {
     try {
       setIsSubmitting(true);
-      await delay(2000);
       if (issue) await axios.patch("/api/issues/" + issue.id, data);
       else await axios.post("/api/issues", data);
 

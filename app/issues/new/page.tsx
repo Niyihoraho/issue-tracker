@@ -1,7 +1,12 @@
 import React from "react";
-import IssueForm from "../_components/IssueForm";
+import dynamic from "next/dynamic";
+import IssueFormSkeleton from "./loading";
 
-const page = () => {
+const IssueForm = dynamic(() => import("@/app/issues/_components/IssueForm"), {
+  loading: () => <IssueFormSkeleton />,
+});
+
+const NewIssues = () => {
   return (
     <>
       <IssueForm />
@@ -9,4 +14,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default NewIssues;
