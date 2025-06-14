@@ -50,7 +50,8 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
     try {
       setIsSubmitting(true);
       await delay(2000);
-      await axios.post("/api/issues", data);
+      if (issue) await axios.patch("/api/issues/" + issue.id, data);
+      else await axios.post("/api/issues", data);
 
       // Show success feedback
       setShowAlert(true);
@@ -84,7 +85,9 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
               />
             </svg>
             <span className="font-medium">
-              Success! Your issue has been submitted.
+              {issue
+                ? "Success! Your issue has been updated."
+                : "Success! Your issue has been submitted."}
             </span>
           </div>
         </div>
@@ -115,7 +118,11 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
 
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Spinner />}
-          {isSubmitting ? "Submitting..." : "Submit New Issue"}
+          {isSubmitting
+            ? "Submitting..."
+            : issue
+              ? "Update Issue"
+              : "Submit New Issue"}
         </Button>
       </form>
     </>
