@@ -1,9 +1,12 @@
 import React from "react";
 import { Table, Badge } from "@radix-ui/themes";
 import prisma from "@/prisma/client";
-import delay from "delay";
+
 import IssueAction from "./IssueAction";
 import { Link } from "@/app/components";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
 // Define types if not importing from @prisma/client
 type Status = "OPEN" | "IN_PROGRESS" | "CLOSED";
@@ -18,7 +21,7 @@ interface Issue {
 // Define the type for the status properties
 interface StatusDetail {
   label: string;
-  color: "red" | "violet" | "green"; // Be specific with the color types
+  color: "red" | "violet" | "green";
 }
 
 const statusMap: Record<Status, StatusDetail> = {
@@ -27,9 +30,20 @@ const statusMap: Record<Status, StatusDetail> = {
   CLOSED: { label: "Closed", color: "green" },
 };
 
-const IssuesPage = async () => {
-  const issues: Issue[] = await prisma.issue.findMany();
-  await delay(2000);
+interface Props {
+  searchParams: Promise<{ status?: Status }>;
+}
+
+const IssuesPage = async ({ searchParams }: Props) => {
+  // Await the searchParams Promise
+  const resolvedSearchParams = await searchParams;
+  const status = resolvedSearchParams.status;
+
+  // Fetch issues with optional filtering
+  const issues = await prisma.issue.findMany({
+    where: status ? { status: status } : {},
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
@@ -84,7 +98,7 @@ const IssuesPage = async () => {
           >
             <div className="flex items-start justify-between mb-2">
               <h3 className="font-medium text-sm text-gray-900 flex-1 pr-2">
-                {issue.title}
+                <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
               </h3>
               <Badge color={statusMap[issue.status].color}>
                 {statusMap[issue.status].label}
@@ -100,7 +114,11 @@ const IssuesPage = async () => {
       {/* Empty State */}
       {issues.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-gray-500 mb-4">No issues found</div>
+          <div className="text-gray-500 mb-4">
+            {status
+              ? `No ${statusMap[status].label.toLowerCase()} issues found`
+              : "No issues found"}
+          </div>
         </div>
       )}
     </div>
