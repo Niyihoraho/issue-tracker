@@ -4,6 +4,7 @@ import prisma from "@/prisma/client";
 
 import IssueAction from "./IssueAction";
 import { Link } from "@/app/components";
+import Pagination from "@/app/components/Pagination";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -31,18 +32,30 @@ const statusMap: Record<Status, StatusDetail> = {
 };
 
 interface Props {
-  searchParams: Promise<{ status?: Status }>;
+  searchParams: Promise<{ status?: Status; page?: string }>;
 }
 
 const IssuesPage = async ({ searchParams }: Props) => {
   // Await the searchParams Promise
   const resolvedSearchParams = await searchParams;
   const status = resolvedSearchParams.status;
+  const page = parseInt(resolvedSearchParams.page || "1");
 
-  // Fetch issues with optional filtering
+  // Pagination settings
+  const pageSize = 10;
+  const skip = (page - 1) * pageSize;
+
+  // Get total count for pagination
+  const totalCount = await prisma.issue.count({
+    where: status ? { status: status } : {},
+  });
+
+  // Fetch issues with pagination and optional filtering
   const issues = await prisma.issue.findMany({
     where: status ? { status: status } : {},
     orderBy: { createdAt: "desc" },
+    skip: skip,
+    take: pageSize,
   });
 
   return (
@@ -121,6 +134,15 @@ const IssuesPage = async ({ searchParams }: Props) => {
           </div>
         </div>
       )}
+
+      {/* Pagination */}
+      <div className="mt-6 flex justify-center">
+        <Pagination
+          itemCount={totalCount}
+          pageSize={pageSize}
+          currentPage={page}
+        />
+      </div>
     </div>
   );
 };
